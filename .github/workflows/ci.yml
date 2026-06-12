@@ -1,0 +1,39 @@
+name: Smart Clinic CI
+
+# Q12 criterion 2: triggered on push or pull_request to main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    # Q12 criterion 1: configure job to set up Java and compile with Maven
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Compile with Maven
+        run: mvn compile -B
+
+      - name: Run tests
+        run: mvn test -B
+
+      - name: Package application
+        run: mvn package -DskipTests -B
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: smart-clinic-jar
+          path: target/smart-clinic.jar
